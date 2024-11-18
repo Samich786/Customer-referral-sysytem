@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen">
     <Sidebar />
-    <div>
+    <div class="max-w-[calc(100%-240px)] h-full w-full bg-[#EBEAEF]">
       <Header />
       <main>
         <NuxtPage />

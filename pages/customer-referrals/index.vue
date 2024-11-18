@@ -1,9 +1,9 @@
 <template>
-  <div>Customer referrals</div>
+  <div class="mx-3"><Table /></div>
 </template>
 
-<script>
-export default {};
+<script setup>
+import Table from "~/components/Common/table.vue";
 </script>
 
 <style></style>

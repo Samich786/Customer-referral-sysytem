@@ -1,9 +1,9 @@
 <template>
-  <div>Network management</div>
+  <div></div>
 </template>
 
-<script>
-export default {};
+<script setup>
+const router = useRouter();
+router.push("/network-management/network");
 </script>
-
 <style></style>

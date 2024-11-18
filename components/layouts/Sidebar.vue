@@ -11,11 +11,14 @@
       v-for="items in menuItems"
       :key="items.name"
       :to="items.slug"
-      :class="{ 'text-white': items.isActive }"
     >
       <div
         class="mx-2 flex items-center gap-3 pl-4"
-        :class="{ 'bg-[#02002F1A] rounded-[5px] ': items.isActive }"
+        :class="{
+          'bg-[#02002F1A] rounded-[5px]': activeRoutes.includes(
+            items.slug.replace('/', '')
+          ),
+        }"
         @click="setActiveItem(items)"
       >
         <component :is="items.icon" />
@@ -23,18 +26,27 @@
           items.name
         }}</span>
       </div>
-      <div v-if="items.subItems && items.isActive">
-        <div v-for="subItems in items.subItems" :key="subItems.name">
-          <div
-            class="ml-12 mt-2 flex items-center gap-3"
-            @click="setActiveItem(subItems)"
-          >
-            <span class="h-2 w-2 rounded-full border border-white"></span>
+      <div
+        v-if="items.subItems && isExpanded"
+        class="bg-[#02002F1A] rounded-[5px] mt-1 mx-2 py-1"
+      >
+        <nuxt-link
+          v-for="subItems in items.subItems"
+          :key="subItems.name"
+          :to="subItems.slug"
+        >
+          <div class="ml-12 mt-2 flex items-center gap-3">
+            <span
+              class="h-2 w-2 rounded-full border border-white"
+              :class="{
+                'bg-white': route.fullPath === subItems.slug,
+              }"
+            ></span>
             <span class="text-white font-normal text-xs">{{
               subItems.name
             }}</span>
           </div>
-        </div>
+        </nuxt-link>
       </div>
     </nuxt-link>
   </div>
@@ -49,6 +61,9 @@ import SettingsIcon from "../Common/Icons/SettingsIcon.vue";
 import CustomerReferralIcon from "../Common/Icons/CustomerReferralIcon.vue";
 import CustomerProfileIcon from "../Common/CustomerProfileIcon.vue";
 const router = useRouter();
+const route = useRoute();
+const activeRoutes = ref([]);
+const isExpanded = ref(false);
 const menuItems = [
   {
     name: "Dashboard",
@@ -81,23 +96,27 @@ const menuItems = [
       {
         name: "Service Categories",
         path: "/network-management/service-categories",
-        slug: "network-management/service-categories",
+        slug: "/network-management/service-categories",
+        isActiveSubItem: false,
       },
 
       {
         name: "Service Location",
         path: "/network-management/service-location",
         slug: "/network-management/service-location",
+        isActiveSubItem: false,
       },
       {
         name: "Network",
         path: "/network-management/network",
         slug: "/network-management/network",
+        isActiveSubItem: false,
       },
       {
         name: "Entities and Providers",
-        path: "/network-management/entities-and-providers",
-        slug: "/network-management/entities-and-providers",
+        path: "/network-management/entities-providers",
+        slug: "/network-management/entities-providers",
+        isActiveSubItem: false,
       },
     ],
   },
@@ -124,10 +143,27 @@ const menuItems = [
   },
 ];
 const setActiveItem = (item) => {
-  menuItems.find((menu) => {
-    menu.isActive = menu.name === item.name;
-  });
+  // Toggle isExpanded if the item has subitems
+  if (item.subItems) {
+    isExpanded.value = !isExpanded.value;
+  } else {
+    // Navigate to the route if no subitems
+    isExpanded.value = false;
+    router.push(item.slug);
+  }
 };
+
+watch(
+  () => route.fullPath,
+  (newValue) => {
+    const activePaths = newValue.split("/").filter((path) => path !== "");
+    activeRoutes.value = activePaths;
+    if (activePaths.includes("network-management")) {
+      isExpanded.value = true;
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <style></style>
