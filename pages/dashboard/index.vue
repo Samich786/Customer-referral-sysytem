@@ -1,11 +1,11 @@
 <template>
   <div>
-    <h1>Dashboard</h1>
+    <Input />
   </div>
 </template>
 
-<script>
-export default {};
+<script setup>
+import Input from "~/components/Common/input.vue";
 </script>
 
 <style></style>
